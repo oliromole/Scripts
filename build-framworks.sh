@@ -9,6 +9,7 @@ var_framework_names=(
 "RFFoundation"
 "RFMapKit"
 "RFNetwork"
+"RFQuartzCore"
 "RFUIKit"
 "RWObjC"
 "RWSQLite"
@@ -22,6 +23,7 @@ var_framework_names2=(
 "RECoreGraphics"   #
 "RECoreLocation"   #
 "RWObjC"           #
+"RFQuartzCore"     #
 "RWSQLite"         #
 
 "${var_separator}"
@@ -30,11 +32,11 @@ var_framework_names2=(
 
 "${var_separator}"
 "REUIKit"          # REFoundation   RWObjC
+"RFMapKit"         # RECoreGraphics RECoreLocation REFoundation   REMapKit RWObjC
 "RWUUID"           # REFoundation   RWObjC
 
 "${var_separator}"
 "RFFoundation"     # REFoundation   RWObjC         RWUUID
-"RFMapKit"         # RECoreLocation REFoundation   REMapKit RWObjC
 "RFUIKit"          # REFoundation   RWObjC
 
 "${var_separator}"
