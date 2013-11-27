@@ -7,8 +7,10 @@ var_framework_names=(
 "REMapKit"
 "REUIKit"
 "RFFoundation"
+"RFLibKern"
 "RFMapKit"
 "RFNetwork"
+"RFObjC"
 "RFQuartzCore"
 "RFUIKit"
 "RWObjC"
@@ -22,9 +24,11 @@ var_framework_names2=(
 "${var_separator}"
 "RECoreGraphics"   #
 "RECoreLocation"   #
-"RWObjC"           #
 "RFQuartzCore"     #
+"RFObjC"           #
+"RFLibKern"        #
 "RWSQLite"         #
+"RWObjC"           #
 
 "${var_separator}"
 "REFoundation"     # RWObjC
@@ -32,12 +36,14 @@ var_framework_names2=(
 
 "${var_separator}"
 "REUIKit"          # REFoundation   RWObjC
-"RFMapKit"         # RECoreGraphics RECoreLocation REFoundation   REMapKit RWObjC
+"RFMapKit"         # RECoreGraphics RECoreLocation REFoundation    REMapKit RWObjC
 "RWUUID"           # REFoundation   RWObjC
 
 "${var_separator}"
 "RFFoundation"     # REFoundation   RWObjC         RWUUID
-"RFUIKit"          # REFoundation   RWObjC
+
+"${var_separator}"
+"RFUIKit"          # REFoundation   RFFoundation   RWObjC          RWUUID
 
 "${var_separator}"
 "RFNetwork"        # REFoundation   RFFoundation   RFUIKit  RWObjC
@@ -45,15 +51,23 @@ var_framework_names2=(
 
 var_used_paranel_command=1
 var_used_last_revision=1
+var_preprocessor_definitions_enabled=1
 
 var_frameworks_dir="${PWD}/Frameworks"
 var_github_url="https://github.com"
 var_github_account_name="oliromole"
 var_github_account_url="${var_github_url}/${var_github_account_name}"
 
+var_external_frameworks_dir="${PWD}/External Frameworks"
+
 if [ -d "${var_frameworks_dir}/" ]
 then
 	rm -rf "${var_frameworks_dir}/"
+fi
+
+if [ -d "${var_external_frameworks_dir}/" ]
+then
+    rm -rf "${var_external_frameworks_dir}/"
 fi
 
 for var_framework_name in "${var_framework_names[@]}"
@@ -80,7 +94,6 @@ do
     else
         ${var_command_git_clone_framwrowk}
     fi
-
 done
 
 wait
@@ -111,6 +124,11 @@ do
         var_command_xcodebuild_build="${var_command_xcodebuild_build} -target ${var_framework_project_target}"
         var_command_xcodebuild_build="${var_command_xcodebuild_build} -configuration ${var_framework_project_configuration}"
 
+        if [ "${var_preprocessor_definitions_enabled}" -eq 1 ]
+        then
+            var_command_xcodebuild_build="${var_command_xcodebuild_build} PR_USE_PREPROCESSOR_DEFINITIONS=1"
+        fi
+
         echo ${var_command_xcodebuild_build}
 
         if [ "${var_used_paranel_command}" -eq 1 ]
@@ -123,4 +141,25 @@ do
 done
 
 wait
+
+mkdir -p  "${var_external_frameworks_dir}"
+
+for var_framework_name in "${var_framework_names[@]}"
+do
+    var_framework_root="${var_frameworks_dir}/${var_framework_name}"
+    var_framework_project_dir="${var_framework_root}/${var_framework_name}"
+    var_framework_path="${var_framework_project_dir}/${var_framework_name}.framework"
+
+    var_external_frameworks_framework_path="${var_external_frameworks_dir}/${var_framework_name}.framework"
+
+    if [ "${var_used_paranel_command}" -eq 1 ]
+    then
+        cp -R "${var_framework_path}/" "${var_external_frameworks_framework_path}/" &
+    else
+        cp -R "${var_framework_path}/" "${var_external_frameworks_framework_path}/"
+    fi
+done
+
+wait
+
 echo "---FINISHED---"
